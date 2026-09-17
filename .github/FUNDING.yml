@@ -1,0 +1,4 @@
+# Affiche le bouton Sponsor sur le dépôt.
+# Fichier propre à GitHub : il est exclu du paquet publié sur wordpress.org
+# par la règle `.*` du .distignore, comme tout le dossier .github.
+github: Fyrins

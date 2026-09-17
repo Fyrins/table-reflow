@@ -49,10 +49,30 @@ jobs:
 
           echo "All four version numbers agree."
 
+      # Checked here, before anything is published, rather than at release time.
+      # By the time the release step runs, the package is already live on SVN and
+      # a missing section can no longer be fixed without cutting a new version.
+      - name: Check the changelog has a section for this version
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if ! grep -qF "## [${VERSION}]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [${VERSION}]' section. Add the release notes before tagging."
+            exit 1
+          fi
+
+          echo "Changelog section found for ${VERSION}."
+
   deploy:
     name: Publish to the plugin directory
     runs-on: ubuntu-latest
     needs: verify-version
+
+    # Needed to create the GitHub release at the end of the job. Everything
+    # else in this workflow only reads the repository.
+    permissions:
+      contents: write
 
     environment:
       name: wordpress-org
@@ -70,8 +90,50 @@ jobs:
       # would publish under this account. Bump the SHA deliberately, after
       # reading the diff.
       - name: Deploy to the wordpress.org SVN repository
+        id: deploy
         uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # stable, as of 2026-09-18
+        with:
+          generate-zip: true
         env:
           SLUG: table-reflow
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      # The release notes come from CHANGELOG.md rather than being written by
+      # hand, so the tag, the directory and the release can never tell three
+      # different stories.
+      - name: Extract the release notes for this version
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          awk -v v="${VERSION}" '
+            $0 ~ "^## \\[" v "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+
+          # verify-version already refused to go further without this section,
+          # so an empty file here means the extraction itself broke.
+          if [ ! -s release-notes.md ]; then
+            echo "::error::Could not extract the CHANGELOG.md section for ${VERSION}."
+            exit 1
+          fi
+
+          cat release-notes.md
+
+      # gh is preinstalled on the runner, so this needs no third-party action
+      # and nothing further to pin.
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZIP_PATH: ${{ steps.deploy.outputs.zip-path }}
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            --verify-tag \
+            "${ZIP_PATH}#table-reflow-${VERSION}.zip"

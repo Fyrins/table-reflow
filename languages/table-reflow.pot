@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-17T21:37:11+00:00\n"
+"POT-Creation-Date: 2026-09-17T22:37:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: table-reflow\n"
 
 #. Plugin Name of the plugin
 #: table-reflow.php
-msgid "Table Reflow – Accessible Responsive Tables"
+msgid "Table Reflow"
 msgstr ""
 
 #. Plugin URI of the plugin

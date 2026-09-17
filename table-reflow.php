@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Table Reflow – Accessible Responsive Tables
+ * Plugin Name:       Table Reflow
  * Plugin URI:        https://github.com/Fyrins/table-reflow
  * Description:       Adds a "stacked on mobile" option to the WordPress table block. Below a chosen width each row becomes a card and every cell is prefixed with its column header, so tables stop scrolling sideways. Helps meet WCAG 2.2 success criterion 1.4.10 (Reflow).
  * Version:           1.0.0
@@ -14,6 +14,16 @@
  * Domain Path:       /languages
  *
  * @package TableReflow
+ *
+ * The name is deliberately short, and the readme.txt title matches it exactly.
+ *
+ * wordpress.org derives the plugin slug from this header, and the slug cannot be
+ * changed once the plugin is approved. A longer name would produce a slug that no
+ * longer matches the text domain, and the language packs built by
+ * translate.wordpress.org would never load. Plugin Check also reports
+ * mismatched_plugin_name when the readme title and this header disagree, so the
+ * two have to say the same thing. What the plugin does is described in the short
+ * description of the readme, which the directory prints under the title.
  */
 
 /*
