@@ -1,4 +1,4 @@
-=== Table Reflow – Accessible Responsive Tables ===
+=== Table Reflow ===
 Contributors: fyrins
 Tags: accessibility, tables, responsive, wcag, a11y
 Requires at least: 6.7

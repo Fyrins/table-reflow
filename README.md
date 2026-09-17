@@ -1,4 +1,4 @@
-# Table Reflow – Accessible Responsive Tables
+# Table Reflow
 
 Makes `core/table` blocks reflow into stacked cards on small screens. Server-rendered PHP + CSS, no JavaScript, ARIA roles preserved.
 
