@@ -1,14 +1,49 @@
 # Table Reflow
 
+![A wide data table on the left, an arrow, and the same data on the right as a stack of cards where each value sits under its column name.](.wordpress-org/banner-1544x500.png)
+
 Makes `core/table` blocks reflow into stacked cards on small screens. Server-rendered PHP + CSS, no JavaScript, ARIA roles preserved.
 
 [![CI](https://github.com/Fyrins/table-reflow/actions/workflows/ci.yml/badge.svg)](https://github.com/Fyrins/table-reflow/actions/workflows/ci.yml)
+[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/Fyrins)
 
 A data table wider than a phone screen forces sideways scrolling, which WCAG 2.2 success criterion [1.4.10 Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html) rules out at 320 CSS pixels. This plugin adds one option to the table block: below a chosen width, each row becomes a card and each value is preceded by its column name.
 
-- Plugin page: *pending review on wordpress.org*
+- Plugin page: *submitted, awaiting review on wordpress.org*
 - Requires WordPress 6.7, PHP 7.4
 - Licensed GPL-2.0-or-later
+
+## What it looks like
+
+The table is untouched above the chosen width, and stacks below it. Same markup, same reading order, same ARIA roles.
+
+<table>
+<tr>
+<td width="55%" valign="top">
+
+![A four column timetable rendered normally on a wide screen, with a header row and four data rows.](.wordpress-org/screenshot-2.png)
+
+<em>Above the breakpoint</em>
+
+</td>
+<td width="45%" valign="top">
+
+![The same timetable on a phone, each row shown as a card with the column name in bold above each value.](.github/media/mobile-stacked.png)
+
+<em>Below the breakpoint</em>
+
+</td>
+</tr>
+</table>
+
+One toggle and one width in the block sidebar, nothing else to configure.
+
+![The block sidebar of the editor, showing a Small screen display panel with a Stack on small screens toggle turned on and a Stack below select set to Phones, under 600px.](.wordpress-org/screenshot-1.png)
+
+Tables that cannot be labelled honestly, because of merged cells or a missing header row, are left alone and keep scrolling. Their container is then made keyboard reachable and given an accessible name, which the block does not do on its own.
+
+![A table with a merged cell on a phone, still laid out as a table and scrolling sideways, with a visible focus outline around its container.](.wordpress-org/screenshot-4.png)
 
 ## Why 6.7 and not lower
 
