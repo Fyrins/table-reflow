@@ -13,6 +13,7 @@
 node_modules
 vendor
 build
+docs
 tests
 composer.json
 composer.lock

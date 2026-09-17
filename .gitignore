@@ -20,3 +20,6 @@ Thumbs.db
 
 # Local QA tooling output
 /.playwright-mcp/
+
+# Notes de travail internes, non publiees et non versionnees
+/docs/
