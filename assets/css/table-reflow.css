@@ -1,0 +1,423 @@
+/**
+ * Table Reflow - front-end styles.
+ *
+ * Enqueued only on pages where at least one table block was actually
+ * transformed, so pages without such a table download nothing.
+ *
+ * No colour is hard coded. The label inherits the cell text colour through
+ * `currentColor`: whatever contrast the theme already provides against the cell
+ * background is preserved, in light and dark schemes alike. Guessing a hex
+ * value here would be a guess about a background this stylesheet cannot see,
+ * and would be the quickest way to fall under the 4.5:1 ratio of WCAG 1.4.3.
+ * The label is told apart from the value by weight and spacing, never by colour
+ * alone (WCAG 1.4.1).
+ */
+
+/* Design tokens. Redefine any of these in a theme to restyle the labels. */
+.table-reflow {
+	--table-reflow-label-color: currentColor;
+	--table-reflow-label-weight: 600;
+	--table-reflow-label-spacing: 0.25em;
+	--table-reflow-cell-spacing: 0.5em;
+	--table-reflow-row-spacing: 1.5em;
+	--table-reflow-row-border-width: 1px;
+}
+
+/*
+ * Long words must be able to break, otherwise a single unbreakable string
+ * reintroduces the horizontal scrolling this plugin exists to remove
+ * (WCAG 1.4.10).
+ */
+.table-reflow th,
+.table-reflow td {
+	overflow-wrap: break-word;
+}
+
+/*
+ * Fallback container, used when a table cannot be stacked. It keeps horizontal
+ * scrolling, so it has to be reachable with a keyboard and needs a visible
+ * focus indicator (WCAG 2.1.1 and 2.4.7). The outline is never removed.
+ */
+.table-reflow-scroll {
+	overflow-x: auto;
+}
+
+.table-reflow-scroll:focus-visible {
+	outline: 2px solid;
+	outline-offset: 2px;
+}
+
+/*
+ * The rules below are repeated once per breakpoint.
+ *
+ * A media query condition cannot read a CSS custom property, and neither can a
+ * container query. There is therefore no way to parameterise the width without
+ * either a build step or a style element injected next to every table. Both
+ * were rejected: the set of breakpoints is closed instead, and each one gets
+ * its own block. Keep them in sync with
+ * Table_Reflow_Config::get_breakpoint_values().
+ */
+
+@media (max-width: 480px) {
+
+	/*
+	 * Switching to `display: block` drops the implicit ARIA roles of every
+	 * table element. The renderer writes them back explicitly, otherwise the
+	 * relationship between a header and its cells is lost (WCAG 1.3.1).
+	 */
+	.table-reflow--bp-480,
+	.table-reflow--bp-480 thead,
+	.table-reflow--bp-480 tbody,
+	.table-reflow--bp-480 tfoot,
+	.table-reflow--bp-480 tr,
+	.table-reflow--bp-480 th,
+	.table-reflow--bp-480 td {
+		display: block;
+	}
+
+	.table-reflow--bp-480 {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	/*
+	 * The header row is hidden from sight but kept in the accessibility tree.
+	 * `display: none` would remove it from that tree and take the column names
+	 * with it. Clipping is used rather than a negative text indent, which
+	 * breaks right-to-left scripts.
+	 */
+	.table-reflow--bp-480 .table-reflow__head {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.table-reflow--bp-480 tbody tr,
+	.table-reflow--bp-480 tfoot tr {
+		margin-bottom: var(--table-reflow-row-spacing);
+		padding-bottom: var(--table-reflow-row-spacing);
+		border-bottom: var(--table-reflow-row-border-width) solid;
+		border-bottom-color: color-mix(in srgb, currentColor 25%, transparent);
+	}
+
+	.table-reflow--bp-480 tbody tr:last-child,
+	.table-reflow--bp-480 tfoot tr:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	/*
+	 * Per-cell borders are dropped while stacked: a row now reads as one card,
+	 * and the row separator above carries the grouping.
+	 */
+	.table-reflow--bp-480 tbody td,
+	.table-reflow--bp-480 tfoot td {
+		width: auto;
+		padding: var(--table-reflow-cell-spacing) 0;
+		border: 0;
+		text-align: start;
+	}
+
+	/*
+	 * Visual restitution of the column name.
+	 *
+	 * The first declaration is the fallback. The second uses the alternative
+	 * text syntax of `content`, which hides the generated string from the
+	 * accessibility tree. Both are needed: browsers exposing generated content
+	 * would otherwise announce the column name twice, once from the pseudo
+	 * element and once from the header cell the roles point to. Browsers that
+	 * do not understand the alternative text syntax keep the first declaration
+	 * and are the only ones where the duplicate remains.
+	 *
+	 * This is why the label is never the only carrier of the information: the
+	 * visually hidden header row and the columnheader roles are.
+	 */
+	.table-reflow--bp-480 td[data-label]::before {
+		content: attr(data-label);
+		content: attr(data-label) / "";
+		display: block;
+		margin-bottom: var(--table-reflow-label-spacing);
+		color: var(--table-reflow-label-color);
+		font-weight: var(--table-reflow-label-weight);
+	}
+}
+
+@media (max-width: 600px) {
+
+	/*
+	 * Switching to `display: block` drops the implicit ARIA roles of every
+	 * table element. The renderer writes them back explicitly, otherwise the
+	 * relationship between a header and its cells is lost (WCAG 1.3.1).
+	 */
+	.table-reflow--bp-600,
+	.table-reflow--bp-600 thead,
+	.table-reflow--bp-600 tbody,
+	.table-reflow--bp-600 tfoot,
+	.table-reflow--bp-600 tr,
+	.table-reflow--bp-600 th,
+	.table-reflow--bp-600 td {
+		display: block;
+	}
+
+	.table-reflow--bp-600 {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	/*
+	 * The header row is hidden from sight but kept in the accessibility tree.
+	 * `display: none` would remove it from that tree and take the column names
+	 * with it. Clipping is used rather than a negative text indent, which
+	 * breaks right-to-left scripts.
+	 */
+	.table-reflow--bp-600 .table-reflow__head {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.table-reflow--bp-600 tbody tr,
+	.table-reflow--bp-600 tfoot tr {
+		margin-bottom: var(--table-reflow-row-spacing);
+		padding-bottom: var(--table-reflow-row-spacing);
+		border-bottom: var(--table-reflow-row-border-width) solid;
+		border-bottom-color: color-mix(in srgb, currentColor 25%, transparent);
+	}
+
+	.table-reflow--bp-600 tbody tr:last-child,
+	.table-reflow--bp-600 tfoot tr:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	/*
+	 * Per-cell borders are dropped while stacked: a row now reads as one card,
+	 * and the row separator above carries the grouping.
+	 */
+	.table-reflow--bp-600 tbody td,
+	.table-reflow--bp-600 tfoot td {
+		width: auto;
+		padding: var(--table-reflow-cell-spacing) 0;
+		border: 0;
+		text-align: start;
+	}
+
+	/*
+	 * Visual restitution of the column name.
+	 *
+	 * The first declaration is the fallback. The second uses the alternative
+	 * text syntax of `content`, which hides the generated string from the
+	 * accessibility tree. Both are needed: browsers exposing generated content
+	 * would otherwise announce the column name twice, once from the pseudo
+	 * element and once from the header cell the roles point to. Browsers that
+	 * do not understand the alternative text syntax keep the first declaration
+	 * and are the only ones where the duplicate remains.
+	 *
+	 * This is why the label is never the only carrier of the information: the
+	 * visually hidden header row and the columnheader roles are.
+	 */
+	.table-reflow--bp-600 td[data-label]::before {
+		content: attr(data-label);
+		content: attr(data-label) / "";
+		display: block;
+		margin-bottom: var(--table-reflow-label-spacing);
+		color: var(--table-reflow-label-color);
+		font-weight: var(--table-reflow-label-weight);
+	}
+}
+
+@media (max-width: 782px) {
+
+	/*
+	 * Switching to `display: block` drops the implicit ARIA roles of every
+	 * table element. The renderer writes them back explicitly, otherwise the
+	 * relationship between a header and its cells is lost (WCAG 1.3.1).
+	 */
+	.table-reflow--bp-782,
+	.table-reflow--bp-782 thead,
+	.table-reflow--bp-782 tbody,
+	.table-reflow--bp-782 tfoot,
+	.table-reflow--bp-782 tr,
+	.table-reflow--bp-782 th,
+	.table-reflow--bp-782 td {
+		display: block;
+	}
+
+	.table-reflow--bp-782 {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	/*
+	 * The header row is hidden from sight but kept in the accessibility tree.
+	 * `display: none` would remove it from that tree and take the column names
+	 * with it. Clipping is used rather than a negative text indent, which
+	 * breaks right-to-left scripts.
+	 */
+	.table-reflow--bp-782 .table-reflow__head {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.table-reflow--bp-782 tbody tr,
+	.table-reflow--bp-782 tfoot tr {
+		margin-bottom: var(--table-reflow-row-spacing);
+		padding-bottom: var(--table-reflow-row-spacing);
+		border-bottom: var(--table-reflow-row-border-width) solid;
+		border-bottom-color: color-mix(in srgb, currentColor 25%, transparent);
+	}
+
+	.table-reflow--bp-782 tbody tr:last-child,
+	.table-reflow--bp-782 tfoot tr:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	/*
+	 * Per-cell borders are dropped while stacked: a row now reads as one card,
+	 * and the row separator above carries the grouping.
+	 */
+	.table-reflow--bp-782 tbody td,
+	.table-reflow--bp-782 tfoot td {
+		width: auto;
+		padding: var(--table-reflow-cell-spacing) 0;
+		border: 0;
+		text-align: start;
+	}
+
+	/*
+	 * Visual restitution of the column name.
+	 *
+	 * The first declaration is the fallback. The second uses the alternative
+	 * text syntax of `content`, which hides the generated string from the
+	 * accessibility tree. Both are needed: browsers exposing generated content
+	 * would otherwise announce the column name twice, once from the pseudo
+	 * element and once from the header cell the roles point to. Browsers that
+	 * do not understand the alternative text syntax keep the first declaration
+	 * and are the only ones where the duplicate remains.
+	 *
+	 * This is why the label is never the only carrier of the information: the
+	 * visually hidden header row and the columnheader roles are.
+	 */
+	.table-reflow--bp-782 td[data-label]::before {
+		content: attr(data-label);
+		content: attr(data-label) / "";
+		display: block;
+		margin-bottom: var(--table-reflow-label-spacing);
+		color: var(--table-reflow-label-color);
+		font-weight: var(--table-reflow-label-weight);
+	}
+}
+
+@media (max-width: 960px) {
+
+	/*
+	 * Switching to `display: block` drops the implicit ARIA roles of every
+	 * table element. The renderer writes them back explicitly, otherwise the
+	 * relationship between a header and its cells is lost (WCAG 1.3.1).
+	 */
+	.table-reflow--bp-960,
+	.table-reflow--bp-960 thead,
+	.table-reflow--bp-960 tbody,
+	.table-reflow--bp-960 tfoot,
+	.table-reflow--bp-960 tr,
+	.table-reflow--bp-960 th,
+	.table-reflow--bp-960 td {
+		display: block;
+	}
+
+	.table-reflow--bp-960 {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	/*
+	 * The header row is hidden from sight but kept in the accessibility tree.
+	 * `display: none` would remove it from that tree and take the column names
+	 * with it. Clipping is used rather than a negative text indent, which
+	 * breaks right-to-left scripts.
+	 */
+	.table-reflow--bp-960 .table-reflow__head {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.table-reflow--bp-960 tbody tr,
+	.table-reflow--bp-960 tfoot tr {
+		margin-bottom: var(--table-reflow-row-spacing);
+		padding-bottom: var(--table-reflow-row-spacing);
+		border-bottom: var(--table-reflow-row-border-width) solid;
+		border-bottom-color: color-mix(in srgb, currentColor 25%, transparent);
+	}
+
+	.table-reflow--bp-960 tbody tr:last-child,
+	.table-reflow--bp-960 tfoot tr:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	/*
+	 * Per-cell borders are dropped while stacked: a row now reads as one card,
+	 * and the row separator above carries the grouping.
+	 */
+	.table-reflow--bp-960 tbody td,
+	.table-reflow--bp-960 tfoot td {
+		width: auto;
+		padding: var(--table-reflow-cell-spacing) 0;
+		border: 0;
+		text-align: start;
+	}
+
+	/*
+	 * Visual restitution of the column name.
+	 *
+	 * The first declaration is the fallback. The second uses the alternative
+	 * text syntax of `content`, which hides the generated string from the
+	 * accessibility tree. Both are needed: browsers exposing generated content
+	 * would otherwise announce the column name twice, once from the pseudo
+	 * element and once from the header cell the roles point to. Browsers that
+	 * do not understand the alternative text syntax keep the first declaration
+	 * and are the only ones where the duplicate remains.
+	 *
+	 * This is why the label is never the only carrier of the information: the
+	 * visually hidden header row and the columnheader roles are.
+	 */
+	.table-reflow--bp-960 td[data-label]::before {
+		content: attr(data-label);
+		content: attr(data-label) / "";
+		display: block;
+		margin-bottom: var(--table-reflow-label-spacing);
+		color: var(--table-reflow-label-color);
+		font-weight: var(--table-reflow-label-weight);
+	}
+}

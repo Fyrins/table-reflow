@@ -1,0 +1,22 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Tooling output
+.phpcs-cache
+/phpcs.xml
+/.phpunit.result.cache
+
+# Build artifacts
+/build/
+/dist/
+*.zip
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local QA tooling output
+/.playwright-mcp/
