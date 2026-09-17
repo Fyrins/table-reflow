@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coding-standards:
+    name: Coding standards (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.4 is the floor declared by the plugin, and the floor WordPress core
+        # itself declares. The upper bound tracks the versions core supports.
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Lint PHP files
+        run: |
+          find . -path ./vendor -prune -o -name '*.php' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: Run PHP_CodeSniffer
+        run: composer lint
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # Plugin Check must run on what is actually published, not on the source
+      # tree. Development files that .distignore removes from the package would
+      # otherwise be reported as errors, and the plugin slug has to match the
+      # directory name or every text domain check misfires.
+      - name: Build the publishable package
+        run: |
+          mkdir -p build/table-reflow
+          rsync -a --delete --delete-excluded \
+            --exclude-from=.distignore \
+            ./ build/table-reflow/
+          echo 'Package contents:'
+          find build/table-reflow -type f | sort
+
+      - name: Run the official Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: './build/table-reflow'
+          categories: |
+            general
+            plugin_repo
+            security
+            performance
+            accessibility

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<ruleset name="Table Reflow">
+	<description>Coding standards for the Table Reflow plugin.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+
+	<arg name="basepath" value="."/>
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg name="parallel" value="8"/>
+	<arg value="sp"/>
+
+	<!--
+		Minimum supported versions.
+
+		PHP 7.4 is the floor WordPress core itself declares, so nothing below it
+		can run a supported WordPress install anyway.
+
+		WordPress 6.7 is not a preference: WP_HTML_Processor only gained support
+		for table elements in that release. Before it, parsing a table fragment
+		bails out and the whole plugin is a no-op.
+	-->
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.7"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress">
+		<!-- The plugin ships no build step, so file names follow WordPress conventions. -->
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+	</rule>
+
+	<!-- Every global symbol must carry the plugin prefix. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="table_reflow"/>
+				<element value="TABLE_REFLOW"/>
+				<element value="Table_Reflow"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Every translated string must use the plugin text domain. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="table-reflow"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="strict_class_file_names" value="true"/>
+		</properties>
+	</rule>
+</ruleset>

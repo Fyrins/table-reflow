@@ -1,0 +1,27 @@
+# Everything listed here is excluded from the package published to wordpress.org.
+# Hidden files are excluded wholesale: none of them belong in a published
+# plugin, and a tool dropping a new dot directory in the repository must not
+# be able to leak it into the package.
+.*
+.git
+.github
+.gitignore
+.distignore
+.editorconfig
+.phpcs-cache
+.DS_Store
+node_modules
+vendor
+build
+docs
+tests
+composer.json
+composer.lock
+phpcs.xml
+phpcs.xml.dist
+package.json
+package-lock.json
+CONTRIBUTING.md
+CHANGELOG.md
+README.md
+.wordpress-org

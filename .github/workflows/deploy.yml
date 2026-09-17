@@ -1,0 +1,77 @@
+name: Deploy to wordpress.org
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-version:
+    name: Verify version numbers agree
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # The version lives in four places. A release that disagrees with itself
+      # ships a package wordpress.org will serve under the wrong number, which
+      # cannot be undone without a new release, so this runs before anything
+      # touches SVN.
+      - name: Compare the tag, the plugin header, the constant and the stable tag
+        run: |
+          set -euo pipefail
+
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          HEADER_VERSION="$(sed -n 's/^ \* Version:[[:space:]]*\(.*\)$/\1/p' table-reflow.php | head -n1 | tr -d '[:space:]')"
+          CONST_VERSION="$(sed -n "s/.*TABLE_REFLOW_VERSION'[^']*'\([^']*\)'.*/\1/p" table-reflow.php | head -n1)"
+          STABLE_TAG="$(sed -n 's/^Stable tag:[[:space:]]*\(.*\)$/\1/p' readme.txt | head -n1 | tr -d '[:space:]')"
+
+          echo "Git tag:        ${TAG_VERSION}"
+          echo "Plugin header:  ${HEADER_VERSION}"
+          echo "PHP constant:   ${CONST_VERSION}"
+          echo "Stable tag:     ${STABLE_TAG}"
+
+          FAILED=0
+          for FOUND in "${HEADER_VERSION}" "${CONST_VERSION}" "${STABLE_TAG}"; do
+            if [ "${FOUND}" != "${TAG_VERSION}" ]; then
+              FAILED=1
+            fi
+          done
+
+          if [ "${FAILED}" -ne 0 ]; then
+            echo "::error::Version mismatch. The Git tag, the plugin header, TABLE_REFLOW_VERSION and the readme stable tag must all match."
+            exit 1
+          fi
+
+          echo "All four version numbers agree."
+
+  deploy:
+    name: Publish to the plugin directory
+    runs-on: ubuntu-latest
+    needs: verify-version
+
+    environment:
+      name: wordpress-org
+      url: https://wordpress.org/plugins/table-reflow/
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # SVN_USERNAME and SVN_PASSWORD are created by hand by the maintainer, in
+      # Settings > Secrets and variables > Actions. Nothing here generates them.
+      # See CONTRIBUTING.md.
+      # Pinned to a commit, not to the mutable `stable` branch. This step runs
+      # with the SVN credentials, so anything that branch points at tomorrow
+      # would publish under this account. Bump the SHA deliberately, after
+      # reading the diff.
+      - name: Deploy to the wordpress.org SVN repository
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # stable, as of 2026-09-18
+        env:
+          SLUG: table-reflow
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}

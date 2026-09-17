@@ -1,0 +1,26 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+The version number must match in three places before a release is tagged: the
+`Version` header of `table-reflow.php`, the `Stable tag` of `readme.txt`, and the
+Git tag itself. The deploy workflow refuses to publish when they disagree.
+
+## [1.0.0] - 2026-09-17
+
+### Added
+
+- Stacked display option on the core table block, driven entirely by PHP and CSS.
+- Explicit ARIA roles written back on stacked tables, since `display: block`
+  removes the implicit roles of table elements.
+- Visually hidden header row, clipped rather than removed, so column names stay
+  in the accessibility tree.
+- Per-table breakpoint chosen from a closed set, with `table_reflow_breakpoint_values`
+  and `table_reflow_default_breakpoint` filters.
+- Keyboard reachable, named scrollable container for tables that cannot be stacked.
+- French translation.
+
+[1.0.0]: https://github.com/Fyrins/table-reflow/releases/tag/v1.0.0
