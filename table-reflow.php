@@ -15,11 +15,15 @@
  *
  * @package TableReflow
  *
- * The header name is deliberately short. wordpress.org derives the plugin slug
- * from this value, and the slug cannot be changed once the plugin is approved.
- * A longer name here would produce a slug that no longer matches the text domain,
- * and language packs would stop loading. The full display name lives in the
- * readme.txt title, which is what the directory shows.
+ * The name is deliberately short, and the readme.txt title matches it exactly.
+ *
+ * wordpress.org derives the plugin slug from this header, and the slug cannot be
+ * changed once the plugin is approved. A longer name would produce a slug that no
+ * longer matches the text domain, and the language packs built by
+ * translate.wordpress.org would never load. Plugin Check also reports
+ * mismatched_plugin_name when the readme title and this header disagree, so the
+ * two have to say the same thing. What the plugin does is described in the short
+ * description of the readme, which the directory prints under the title.
  */
 
 /*

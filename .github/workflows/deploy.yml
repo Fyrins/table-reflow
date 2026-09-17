@@ -49,6 +49,21 @@ jobs:
 
           echo "All four version numbers agree."
 
+      # Checked here, before anything is published, rather than at release time.
+      # By the time the release step runs, the package is already live on SVN and
+      # a missing section can no longer be fixed without cutting a new version.
+      - name: Check the changelog has a section for this version
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if ! grep -qF "## [${VERSION}]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [${VERSION}]' section. Add the release notes before tagging."
+            exit 1
+          fi
+
+          echo "Changelog section found for ${VERSION}."
+
   deploy:
     name: Publish to the plugin directory
     runs-on: ubuntu-latest
@@ -98,9 +113,11 @@ jobs:
             found { print }
           ' CHANGELOG.md > release-notes.md
 
+          # verify-version already refused to go further without this section,
+          # so an empty file here means the extraction itself broke.
           if [ ! -s release-notes.md ]; then
-            echo "No CHANGELOG.md section found for ${VERSION}." >&2
-            printf 'Release %s.\n' "${VERSION}" > release-notes.md
+            echo "::error::Could not extract the CHANGELOG.md section for ${VERSION}."
+            exit 1
           fi
 
           cat release-notes.md
