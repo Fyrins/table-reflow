@@ -166,9 +166,16 @@ final class Table_Reflow_Renderer {
 	 * @return string Breakpoint value in pixels.
 	 */
 	private function get_breakpoint( $block ) {
-		$requested = isset( $block['attrs']['tableReflowBreakpoint'] )
-			? (string) $block['attrs']['tableReflowBreakpoint']
-			: '';
+		$raw = isset( $block['attrs']['tableReflowBreakpoint'] )
+			? $block['attrs']['tableReflowBreakpoint']
+			: null;
+
+		/*
+		 * A hand-edited block comment can carry an array or an object here.
+		 * Casting either one straight to string raises a warning, or throws for
+		 * an object with no __toString, instead of falling back cleanly.
+		 */
+		$requested = is_scalar( $raw ) ? (string) $raw : '';
 
 		return in_array( $requested, Table_Reflow_Config::get_breakpoint_values(), true )
 			? $requested
@@ -494,6 +501,16 @@ final class Table_Reflow_Renderer {
 						if ( ! $processor->set_attribute( 'data-label', $labels[ $column ] ) ) {
 							return null;
 						}
+					} elseif ( null !== $processor->get_attribute( 'data-label' ) ) {
+						/*
+						 * The column has no usable header, but the markup already
+						 * carried a data-label, pasted from elsewhere most likely.
+						 * The stylesheet would still print it next to a value it
+						 * does not describe, so it has to go.
+						 */
+						if ( ! $processor->remove_attribute( 'data-label' ) ) {
+							return null;
+						}
 					}
 
 					++$column;
@@ -537,18 +554,26 @@ final class Table_Reflow_Renderer {
 				return null;
 			}
 
-			// Never override an attribute the author or the theme already set.
-			if ( null === $processor->get_attribute( 'tabindex' ) ) {
-				$processor->set_attribute( 'tabindex', '0' );
+			/*
+			 * Never override an attribute the author or the theme already set.
+			 * Every write is checked, as in the stacked path: a container that
+			 * announced itself as a region without being reachable, or reachable
+			 * without a name, is worse than the untouched markup.
+			 */
+			if ( null === $processor->get_attribute( 'tabindex' ) && ! $processor->set_attribute( 'tabindex', '0' ) ) {
+				return null;
 			}
 
-			if ( null === $processor->get_attribute( 'role' ) ) {
-				$processor->set_attribute( 'role', 'region' );
+			if ( null === $processor->get_attribute( 'role' ) && ! $processor->set_attribute( 'role', 'region' ) ) {
+				return null;
 			}
 
 			if ( null === $processor->get_attribute( 'aria-label' ) && null === $processor->get_attribute( 'aria-labelledby' ) ) {
 				$label = '' !== $caption ? $caption : Table_Reflow_Config::get_scrollable_label();
-				$processor->set_attribute( 'aria-label', $label );
+
+				if ( ! $processor->set_attribute( 'aria-label', $label ) ) {
+					return null;
+				}
 			}
 
 			return $processor->get_updated_html();

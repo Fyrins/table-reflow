@@ -80,7 +80,7 @@ Yes, with the `table_reflow_breakpoint_values` and `table_reflow_default_breakpo
 
 = Does it slow pages down? =
 
-The stylesheet is under 4 KB and is enqueued only on pages that actually contain a transformed table. Blocks other than the table block cost one string comparison.
+The stylesheet is about 13 KB, and it is enqueued only on pages that actually contain a transformed table. It compresses to under 2.5 KB, because the four breakpoint blocks are near identical: a media query condition cannot read a CSS custom property, so each breakpoint needs its own rules. There is no front-end JavaScript at all, and blocks other than the table block cost one string comparison.
 
 = Will it break my existing tables? =
 

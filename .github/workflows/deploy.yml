@@ -65,8 +65,12 @@ jobs:
       # SVN_USERNAME and SVN_PASSWORD are created by hand by the maintainer, in
       # Settings > Secrets and variables > Actions. Nothing here generates them.
       # See CONTRIBUTING.md.
+      # Pinned to a commit, not to the mutable `stable` branch. This step runs
+      # with the SVN credentials, so anything that branch points at tomorrow
+      # would publish under this account. Bump the SHA deliberately, after
+      # reading the diff.
       - name: Deploy to the wordpress.org SVN repository
-        uses: 10up/action-wordpress-plugin-deploy@stable
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # stable, as of 2026-09-18
         env:
           SLUG: table-reflow
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
