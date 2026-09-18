@@ -10,6 +10,8 @@ see it?
   while weakening the semantics will be declined. If you are unsure, add the case
   to `tests/test-cases.md` with the screen reader output you observed.
 - **No JavaScript on the front end.** Ever. The transformation is PHP and CSS.
+  The build produces an editor script and a stylesheet, nothing that runs for a
+  visitor.
 - **No outbound request, no telemetry, no external asset, no database option.**
 - **Nothing is written into saved block markup.** See the section on block
   validation in `README.md` before touching the editor script.
@@ -21,18 +23,29 @@ see it?
 ```bash
 git clone git@github.com:Fyrins/table-reflow.git
 cd table-reflow
-composer install
+composer install          # linters
+npm ci && npm run build   # editor script and stylesheet
 ```
+
+`build/` is not committed and the plugin enqueues from it, so the build step is
+required before the plugin does anything. Use `npm start` for watch mode.
 
 Symlink the folder into a WordPress install running 6.7 or later.
 
 ## Before opening a pull request
 
 ```bash
-composer lint
+composer lint       # PHPCS
+npm run lint:js     # ESLint
+npm run lint:css    # stylelint
+npm run build       # the package ships build/, so it must be current
 ```
 
-PHPCS must be clean. Then run [Plugin Check](https://wordpress.org/plugins/plugin-check/)
+All three linters must be clean, and the build must be up to date: `build/` is
+what ships, and a stale build publishes code nobody reviewed.
+
+Note that `npm run format` reaches beyond `src/`. `.prettierignore` keeps it out
+of the workflows and the Markdown, whose indentation follows `.editorconfig`. Then run [Plugin Check](https://wordpress.org/plugins/plugin-check/)
 against the plugin from the WordPress admin, with the "Plugin Repo" checks
 enabled. It must report no error and no warning.
 
@@ -51,6 +64,16 @@ wp i18n make-pot . languages/table-reflow.pot --slug=table-reflow --domain=table
 wp i18n update-po languages/table-reflow.pot languages/
 wp i18n make-mo languages/
 wp i18n make-json languages/ --no-purge
+
+# make-json names the file after the md5 of the path found in the .po
+# references, which is src/index.js, while the enqueued script is
+# build/index.js. Rename it after the script handle instead: core's
+# _load_script_textdomain_from_src() looks for
+# <domain>-<locale>-<handle>.json first when a path is passed to
+# wp_set_script_translations(), before trying any md5, so this name survives
+# the build layout changing.
+mv languages/table-reflow-fr_FR-*.json \
+   languages/table-reflow-fr_FR-table-reflow-editor.json
 ```
 
 Never put a variable or a concatenation inside a translation function, and always

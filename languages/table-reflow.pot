@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-17T22:37:31+00:00\n"
+"POT-Creation-Date: 2026-09-18T05:22:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: table-reflow\n"
@@ -69,22 +69,22 @@ msgstr ""
 msgid "Table, scrollable sideways"
 msgstr ""
 
-#: assets/js/table-reflow-editor.js:88
+#: src/index.js:86
+msgid "Small screen display"
+msgstr ""
+
+#: src/index.js:91
 msgid "Stack on small screens"
 msgstr ""
 
-#: assets/js/table-reflow-editor.js:90
+#: src/index.js:96
 msgid "Below the chosen width, each row is shown as a card and every cell is preceded by its column name, instead of the table scrolling sideways. Needs a header row and no merged cells; a table that does not qualify keeps horizontal scrolling."
 msgstr ""
 
-#: assets/js/table-reflow-editor.js:104
+#: src/index.js:108
 msgid "Stack below"
 msgstr ""
 
-#: assets/js/table-reflow-editor.js:107
+#: src/index.js:114
 msgid "Screen width under which the table switches to the stacked layout."
-msgstr ""
-
-#: assets/js/table-reflow-editor.js:127
-msgid "Small screen display"
 msgstr ""

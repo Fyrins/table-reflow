@@ -1,0 +1,33 @@
+{
+	"name": "table-reflow",
+	"version": "1.0.0",
+	"description": "Makes core/table blocks reflow into stacked cards on small screens.",
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start",
+		"lint:js": "wp-scripts lint-js",
+		"lint:css": "wp-scripts lint-style",
+		"format": "wp-scripts format"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fyrins/table-reflow.git"
+	},
+	"author": "Alexandre Revire",
+	"license": "GPL-2.0-or-later",
+	"bugs": {
+		"url": "https://github.com/Fyrins/table-reflow/issues"
+	},
+	"homepage": "https://github.com/Fyrins/table-reflow",
+	"devDependencies": {
+		"@wordpress/block-editor": "^17.1.0",
+		"@wordpress/components": "^40.1.0",
+		"@wordpress/compose": "^8.8.0",
+		"@wordpress/hooks": "^4.55.0",
+		"@wordpress/i18n": "^6.28.0",
+		"@wordpress/scripts": "^35.0.0"
+	},
+	"engines": {
+		"node": "^20.19.0 || >=22.13.0"
+	}
+}

@@ -89,6 +89,20 @@ jobs:
       # with the SVN credentials, so anything that branch points at tomorrow
       # would publish under this account. Bump the SHA deliberately, after
       # reading the diff.
+      # build/ n'est pas versionné : les artefacts se reconstruisent, ils ne se
+      # commitent pas. Le paquet publié en a besoin, donc la construction a lieu
+      # ici, avant tout ce qui inspecte le paquet.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Build the assets
+        run: |
+          npm ci
+          npm run build
+
       - name: Deploy to the wordpress.org SVN repository
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # stable, as of 2026-09-18

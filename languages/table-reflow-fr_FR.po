@@ -64,23 +64,23 @@ msgstr "Moins de %s px"
 msgid "Table, scrollable sideways"
 msgstr "Tableau, défilement horizontal"
 
-#: assets/js/table-reflow-editor.js:88
+#: src/index.js:91
 msgid "Stack on small screens"
 msgstr "Empiler sur les petits écrans"
 
-#: assets/js/table-reflow-editor.js:90
+#: src/index.js:96
 msgid "Below the chosen width, each row is shown as a card and every cell is preceded by its column name, instead of the table scrolling sideways. Needs a header row and no merged cells; a table that does not qualify keeps horizontal scrolling."
 msgstr "Sous la largeur choisie, chaque ligne s'affiche comme une carte et chaque cellule est précédée du nom de sa colonne, au lieu de faire défiler le tableau horizontalement. Nécessite une ligne d'en-tête et aucune cellule fusionnée ; un tableau qui ne remplit pas ces conditions conserve le défilement horizontal."
 
-#: assets/js/table-reflow-editor.js:104
+#: src/index.js:108
 msgid "Stack below"
 msgstr "Empiler en dessous de"
 
-#: assets/js/table-reflow-editor.js:107
+#: src/index.js:114
 msgid "Screen width under which the table switches to the stacked layout."
 msgstr "Largeur d'écran en dessous de laquelle le tableau bascule en affichage empilé."
 
-#: assets/js/table-reflow-editor.js:127
+#: src/index.js:86
 msgid "Small screen display"
 msgstr "Affichage sur petit écran"
 

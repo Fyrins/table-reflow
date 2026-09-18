@@ -84,26 +84,39 @@ final class Table_Reflow_Plugin {
 	 * @return void
 	 */
 	public function register_assets() {
+		$asset_file = TABLE_REFLOW_PATH . 'build/index.asset.php';
+
+		/*
+		 * The dependency array and the version come from the file @wordpress/scripts
+		 * writes at build time. Listing dependencies by hand is how you end up
+		 * declaring some you do not use and missing others: the generated list for
+		 * this script includes react-jsx-runtime, which no hand-written array would
+		 * have contained. The version is a content hash, so a rebuild invalidates
+		 * caches on its own.
+		 */
+		$asset = file_exists( $asset_file )
+			? require $asset_file
+			: array(
+				'dependencies' => array(),
+				'version'      => TABLE_REFLOW_VERSION,
+			);
+
 		wp_register_style(
 			self::STYLE_HANDLE,
-			TABLE_REFLOW_URL . 'assets/css/table-reflow.css',
+			TABLE_REFLOW_URL . 'build/style-index.css',
 			array(),
-			TABLE_REFLOW_VERSION
+			$asset['version']
 		);
+
+		// The build also emits style-index-rtl.css. This tells WordPress to serve
+		// it instead on right-to-left locales.
+		wp_style_add_data( self::STYLE_HANDLE, 'rtl', 'replace' );
 
 		wp_register_script(
 			self::EDITOR_SCRIPT_HANDLE,
-			TABLE_REFLOW_URL . 'assets/js/table-reflow-editor.js',
-			array(
-				'wp-block-editor',
-				'wp-blocks',
-				'wp-components',
-				'wp-compose',
-				'wp-element',
-				'wp-hooks',
-				'wp-i18n',
-			),
-			TABLE_REFLOW_VERSION,
+			TABLE_REFLOW_URL . 'build/index.js',
+			$asset['dependencies'],
+			$asset['version'],
 			true
 		);
 

@@ -87,7 +87,7 @@ No plugin makes a site conformant with an accessibility standard, and this one m
 
 The header row is clipped, not set to `display: none`, so it stays in the accessibility tree. No flex or grid reordering is used, so the reading order never diverges from the visual order (WCAG 1.3.2).
 
-No colour is hard coded. Labels inherit their cell's text colour through `currentColor`, which preserves whatever contrast the theme already provides in light and dark schemes alike (WCAG 1.4.3). Labels are distinguished from values by weight and spacing, never by colour alone.
+No colour is hard coded. Labels inherit their cell's text colour through `currentcolor`, which preserves whatever contrast the theme already provides in light and dark schemes alike (WCAG 1.4.3). Labels are distinguished from values by weight and spacing, never by colour alone.
 
 See [`tests/test-cases.md`](tests/test-cases.md) for the full matrix of table structures, with the expected NVDA and VoiceOver output for each.
 
@@ -129,7 +129,7 @@ Redefine any of these on `.table-reflow`, or anywhere above it:
 
 | Property | Default | Role |
 | --- | --- | --- |
-| `--table-reflow-label-color` | `currentColor` | Colour of the column name |
+| `--table-reflow-label-color` | `currentcolor` | Colour of the column name |
 | `--table-reflow-label-weight` | `600` | Weight of the column name |
 | `--table-reflow-label-spacing` | `0.25em` | Gap between a label and its value |
 | `--table-reflow-cell-spacing` | `0.5em` | Vertical padding of a stacked cell |
@@ -141,17 +141,33 @@ Redefine any of these on `.table-reflow`, or anywhere above it:
 ```bash
 git clone git@github.com:Fyrins/table-reflow.git
 cd table-reflow
-composer install          # development dependencies only, none ship in the package
+composer install          # linters
+npm ci && npm run build   # editor script and stylesheet
 ```
 
-Symlink or copy the folder into `wp-content/plugins/` and activate it. The plugin has no runtime dependency: `vendor/` exists only for the linters.
+The build step is not optional: `build/` is not committed, and the plugin enqueues from it. Symlink or copy the folder into `wp-content/plugins/` and activate it. Nothing in `vendor/` or `node_modules/` ships in the package.
 
 ## Development
 
 ```bash
+npm start                 # watch mode on src/
+npm run build             # production build
+
 composer lint             # PHPCS, WordPress Coding Standards
 composer lint:fix         # PHPCBF
+npm run lint:js           # ESLint, WordPress config
+npm run lint:css          # stylelint, WordPress config
 ```
+
+The editor script is written with JSX in `src/index.js` and the stylesheet in
+`src/style.scss`. The four breakpoint blocks in the compiled CSS are generated
+from a single `@each` loop: a media query condition cannot read a CSS custom
+property, so each breakpoint needs its own rules, and maintaining four
+near-identical blocks by hand is how they drift apart.
+
+`@wordpress/scripts` also writes `build/index.asset.php`, which carries the exact
+dependency array and a content hash used as the asset version. Both are read by
+`Table_Reflow_Plugin::register_assets()` instead of being declared by hand.
 
 `phpcs.xml.dist` enforces the WordPress ruleset, the `table_reflow` prefix on every global symbol, the `table-reflow` text domain on every translated string, and PHP 7.4 compatibility.
 

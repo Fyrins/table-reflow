@@ -55,6 +55,20 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
+      # build/ n'est pas versionné : les artefacts se reconstruisent, ils ne se
+      # commitent pas. Le paquet publié en a besoin, donc la construction a lieu
+      # ici, avant tout ce qui inspecte le paquet.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Build the assets
+        run: |
+          npm ci
+          npm run build
+
       # Plugin Check must run on what is actually published, not on the source
       # tree. Development files that .distignore removes from the package would
       # otherwise be reported as errors, and the plugin slug has to match the

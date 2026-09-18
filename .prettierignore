@@ -1,0 +1,13 @@
+# Prettier n'a rien à faire dans ces fichiers : ils ne font pas partie du build
+# JS, et son reformatage contredit le .editorconfig du dépôt.
+.github/
+languages/
+build/
+vendor/
+docs/
+*.md
+
+# Manifestes : leur format est celui de leur propre outil, pas celui de prettier.
+composer.json
+composer.lock
+package-lock.json

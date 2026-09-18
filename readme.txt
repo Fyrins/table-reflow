@@ -54,7 +54,7 @@ The same criteria are what RGAA 4 checks under its own numbering. Testing with a
 
 = Development =
 
-Development happens in the open at https://github.com/Fyrins/table-reflow . The plugin ships no build step: the code you download is the code that runs.
+Development happens in the open at https://github.com/Fyrins/table-reflow . The editor script and the stylesheet are built with `@wordpress/scripts`, the official tooling, and the sources live in `src/` in the repository.
 
 == Installation ==
 
@@ -81,7 +81,7 @@ Yes, with the `table_reflow_breakpoint_values` and `table_reflow_default_breakpo
 
 = Does it slow pages down? =
 
-The stylesheet is about 13 KB, and it is enqueued only on pages that actually contain a transformed table. It compresses to under 2.5 KB, because the four breakpoint blocks are near identical: a media query condition cannot read a CSS custom property, so each breakpoint needs its own rules. There is no front-end JavaScript at all, and blocks other than the table block cost one string comparison.
+The stylesheet is 5 KB, under 1 KB compressed, and it is enqueued only on pages that actually contain a transformed table. There is no front-end JavaScript at all, and blocks other than the table block cost one string comparison.
 
 = Will it break my existing tables? =
 
